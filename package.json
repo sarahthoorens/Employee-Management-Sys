@@ -1,0 +1,25 @@
+{
+  "name": "employee-management-sys",
+  "version": "1.0.0",
+  "description": "CLI employee tracker using sql, node and inquirer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarahthoorens/Employee-Management-Sys.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sarahthoorens/Employee-Management-Sys/issues"
+  },
+  "homepage": "https://github.com/sarahthoorens/Employee-Management-Sys#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^9.1.4",
+    "mysql2": "^2.3.3"
+  }
+}
