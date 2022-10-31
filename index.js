@@ -1,84 +1,93 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const dbConnect = require("./config/connection")
+const dbConnect = require("./config/connection");
+const express = require('express');
+const { get } = require('https');
+const app = express();
 
 dbConnect.connect((err) => {
     if (err) throw err;
     console.log('WELCOME TO THE EMPLOYEE MANAGEMENT SYSTEM');
-    promptUser();
-})
+});
 
-const promptUser = () =>  {inquirer 
-    .prompt ([
-    {
-        type: 'list', 
-        name: 'start',
-        message: 'What would you like to do?',
-        choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee\'s role', 'Exit']
-    },
-])
-.then((response) => {
-    let response = { choices };
-    switch (response)  {
-        case 'View all departments':    
-            getAllDepartments();
-        case 'View all roles':
-            getAllRoles();
-        case 'View all employees':
-            getAllEmployees();
-        case 'Add a department':
-            addDept();
-        case 'Add a role':
-            addRole();
-        case 'Add an employee':
-            addEmployee();
-        case 'Update an employee\'s role':
-            updateEmployeeRole();
-        case 'Exit':
-            dbConnect.end()
-
-    } 
-})}
-
+const promptUser = () => {
+    inquirer
+        .prompt(
+            {
+                type: 'list',
+                name: 'start',
+                message: 'What would you like to do?',
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee\'s role', 'Exit']
+            })
+        .then((answers) => {
+            if (answers.start === 'View all departments') {
+                getAllDepartments();
+            };
+            if (answers.start === 'View all roles') {
+                getAllRoles();
+            };
+            if (answers.start === 'View all employees') {
+                getAllEmployees();
+            };
+            if (answers.start === 'View all departments') {
+                getAllDepartments();
+            };
+            if (answers.start === 'Add a department') {
+                addDept();
+            };
+            if (answers.start === 'Add a role') {
+                addRole();
+            };
+            if (answers.start === 'Add an employee') {
+                addEmployee();
+            };
+            if (answers.start === 'Update an employee\'s role') {
+                updateEmployeeRole();
+            };
+            if (answers.start === 'Exit') {
+                dbConnect.end();
+            };
+        })
+    }
 //////////////////////////////
 // FUNCTIONS //
 /////////////////////////////
 
 // VIEW-ALL FUNCTIONS
 
-const getAllEmployees = async () => {
+const getAllEmployees = () => {
     let table = `SELECT
-                id, 
+                id,
                 first_name, 
-                last_name, 
-                title,
-                role_id, 
-                FROM employees ORDER BY id ASC`;
+                last_name,
+                role_id,
+                title
+                FROM employees ORDER BY last_name ASC;`;
         dbConnect.query(table, (err, response) => {
         if (err) throw err;
-        console.log('Current Employees');
+        console.log('Current Employees:');
         console.table(response);
         promptUser();
     });
 };
 
-const getAllDepartments = async () => {
-    let table = `SELECT *
-                FROM department ORDER BY id ASC`;
-        dbConnect.query(table, (err, response) => {
-        if (err) throw err;
-        console.log('Departments');
-        console.table(response);
-        promptUser();
-        });
-};
+const getAllDepartments = () => {
+    let table =  `SELECT *
+                FROM department ORDER BY dept_id ASC;`;
+                dbConnect.query(table, (err, response) => {
+                    if (err) throw err;
+                    console.log('All Departments:');
+                    console.table(response);
+                    promptUser();
+                });
+    };
 
-const getAllRoles = async () => {
+const getAllRoles = () => {
     let table = `SELECT *
-                FROM role ORDER BY id ASC`;
+                FROM role ORDER BY role_id ASC;`;
         dbConnect.query(table, (err, response) => {
         if (err) throw err;
-        console.log('All Roles');
+        console.log('All Roles:');
         console.table(response);
         promptUser();
         });
@@ -94,17 +103,30 @@ const question = inquirer
         type: 'input', 
         name: 'deptName',
         message: 'What is the name of the department?',
+    },
+    {
+    type: 'input', 
+    name: 'deptId',
+    message: 'What is the new department\'s ID?',
     }
 ]) .then((answer) => {
-    let table = `INSERT INTO department (department_name) VALUES (?)`;
-    dbConnect.query(table, answer.deptName, (err) => {
+    let newDept = [answer.deptName, answer.deptId]
+    let table = `INSERT INTO department (name, dept_id ) VALUES (?, ?)`;
+    dbConnect.query(table, newDept, (err) => {
       if (err) throw err;
+      getAllDepartments();
         })
     })
 };
 
-async function addRole () {
-    const question = inquirer 
+const addRole = () => {
+    let departments = []
+    let table = `SELECT * FROM department ORDER BY name ASC;`;
+    dbConnect.query(table, (err, response) => {
+        if (err) throw err;
+        departments.push(response);
+    });
+    inquirer 
         .prompt ([
         {
             type: 'input', 
@@ -114,22 +136,20 @@ async function addRole () {
        {
             type: 'input', 
             name: 'roleSalary',
-            message: 'What is the salary of the role?',
-            choices: getAllRoles()
-    
-        },
+            message: 'What is the salary of the role?'
+         },
         {  
             type: 'list', 
             name: 'roleDepartment',
             message: 'Which department does the role belong to?',
-            choices: getAllDepartments()
+            choices: departments
         }
        
     ]).then ((answers) => {
-        let answersArray = [answers.roleName, answers.roseSalary, answers.roleDepartment];
+        let answersArray = [answers.roleName, answers.roleSalary, answers.roleDepartment];
         console.log(answersArray);
         let table = `INSERT INTO role (name, salary, department_id) VALUES (?, ?, ?)`;
-        dbConnect.query(table, answersArray, ( (err) => {
+        dbConnect.query(table, answersArray, ((err) => {
             if (err) throw err;
             console.log('New role added successfully.');
             getAllRoles();
@@ -139,14 +159,21 @@ async function addRole () {
 
 function addEmployee () {
     let managers = [];
-    let table = `SELECT
+    let managerTable = `SELECT
                 first_name, 
-                last_name 
+                last_name,
+                title, 
                 FROM employees WITH title LIKE %Manager%`;
-    dbConnect.query(table, (err, response) => {
-        console.log(response);
+    dbConnect.query(managerTable, (err, response) => {
         if (err) throw err;
+        console.log(response);
         managers.push(response); 
+    });
+    let roles = []
+    let rolesTable = `SELECT * FROM department ORDER BY name ASC;`;
+    dbConnect.query(rolesTable, (err, response) => {
+        if (err) throw err;
+        roles.push(response);
     });
     inquirer 
         .prompt ([
@@ -166,7 +193,7 @@ function addEmployee () {
         type: 'list', 
         name: 'employeeRole',
         message: `What is the employee's role?`,
-        choices: getAllRoles()
+        choices: roles
     },
     {   
         type: 'list', 
@@ -176,6 +203,16 @@ function addEmployee () {
 
     },
   ])
+  .then ((answers) => {
+    let answersArray = [answers.employeeFirstName, answers.employeeLastName, answers.employeeRole, answers.employeeManager];
+    console.log(answersArray);
+    let table = `INSERT INTO role (first_name, last_name, role, name_of_manager) VALUES (?, ?, ?)`;
+    dbConnect.query(table, answersArray, ((err) => {
+        if (err) throw err;
+        console.log('New role added successfully.');
+        getAllRoles();
+    }))
+ });
 };
 
 async function updateEmployeeRole () {
@@ -188,7 +225,5 @@ async function updateEmployeeRole () {
             // choices: [refer to roles table]
         },
 ])
-}
-
-
-
+};
+promptUser();

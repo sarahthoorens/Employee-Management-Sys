@@ -1,4 +1,4 @@
-INSERT INTO department (id, name)
+INSERT INTO department (dept_id, name)
 VALUES (12000, 'ACCOUNTING'),
     (13000, 'SALES'),
     (14000, 'MARKETING'),
@@ -22,23 +22,23 @@ VALUES ('Accounting Manager', 120050.00),
     ('Admninistrative Specialist', 60600.00),
     ('Administrative Associate', 54400.00);
 
-INSERT INTO employee (first_name, last_name, role_id)
-VALUES ('Mia', 'Wallace', 001)
-    ('Jules', 'Winifield', 002)
-    ('Marsellus', 'Wallace', 003)
-    ('Vincent', 'Vega', 004)
-    ('Marty', 'McFly', 005)
-    ('Emmett', 'Brown', 006)
-    ('Biff', 'Tannen', 007)
-    ('Jennifer', 'Parker', 008)
-    ('Lorrain', 'Baines', 009)
-    ('Goldie', 'Wilson', 010)
-    ('James', 'Strickland', 011)
-    ('Marvin', 'Berry', 012)
-    ('Donnie', 'Darko', 013)
-    ('Karen', 'Pomeroy', 014)
-    ('Kitty', 'Farmer', 015)
-    ('James', 'Anderson', 012);
+INSERT INTO employees (first_name, last_name, role_id)
+VALUES ('Mia', 'Wallace', 00100),
+    ('Jules', 'Winifield', 00200),
+    ('Marsellus', 'Wallace', 00300),
+    ('Vincent', 'Vega', 00400),
+    ('Marty', 'McFly', 00500),
+    ('Emmett', 'Brown', 00600),
+    ('Biff', 'Tannen', 00700),
+    ('Jennifer', 'Parker', 00800),
+    ('Lorraine', 'Baines', 00900),
+    ('Goldie', 'Wilson', 01000),
+    ('James', 'Strickland', 01100),
+    ('Marvin', 'Berry', 01200),
+    ('Donnie', 'Darko', 01300),
+    ('Karen', 'Pomeroy', 01400),
+    ('Kitty', 'Farmer', 01500),
+    ('James', 'Anderson', 01200);
 
 
 

@@ -8,7 +8,7 @@ const dbConnect = mysql.createConnection(
       password: '',
       database: 'employees_db'
     },
-    console.log(`Connected to the movies_db database.`)
-  ).promise();
+    console.log(`Connected to the employees_db database.`)
+  );
   
 module.exports = dbConnect;
