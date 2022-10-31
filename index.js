@@ -7,10 +7,10 @@ const app = express();
 
 dbConnect.connect((err) => {
     if (err) throw err;
-    console.log('WELCOME TO THE EMPLOYEE MANAGEMENT SYSTEM');
 });
 
 const promptUser = () => {
+    console.log('WELCOME TO THE EMPLOYEE MANAGEMENT SYSTEM');
     inquirer
         .prompt(
             {
@@ -120,12 +120,16 @@ const question = inquirer
 };
 
 const addRole = () => {
-    let departments = []
-    let table = `SELECT * FROM department ORDER BY name ASC;`;
+    let deptChoices = []
+    // let dept_id = []
+    let table = `SELECT * FROM department ORDER BY name ASC;`
     dbConnect.query(table, (err, response) => {
-        if (err) throw err;
-        departments.push(response);
-    });
+        console.log(response);
+      if (err) throw err;
+       response.forEach((department) => {
+           deptChoices.push(`${department.dept_id} -- ${department.name}`)
+        })
+
     inquirer 
         .prompt ([
         {
@@ -142,20 +146,21 @@ const addRole = () => {
             type: 'list', 
             name: 'roleDepartment',
             message: 'Which department does the role belong to?',
-            choices: departments
+            choices: deptChoices
         }
-       
-    ]).then ((answers) => {
-        let answersArray = [answers.roleName, answers.roleSalary, answers.roleDepartment];
-        console.log(answersArray);
-        let table = `INSERT INTO role (name, salary, department_id) VALUES (?, ?, ?)`;
+     ]).then ((answers) => {
+        let dept_id = answers.roleDepartment.split(' ')[0];    
+        console.log(dept_id);    
+        let answersArray = [answers.roleName, answers.roleSalary, dept_id];
+        console.log(`answers array ${answersArray}`);
+        let table = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
         dbConnect.query(table, answersArray, ((err) => {
             if (err) throw err;
             console.log('New role added successfully.');
             getAllRoles();
         }))
      });
-    };
+    });    }; 
 
 function addEmployee () {
     let managers = [];
@@ -166,7 +171,6 @@ function addEmployee () {
                 FROM employees WITH title LIKE %Manager%`;
     dbConnect.query(managerTable, (err, response) => {
         if (err) throw err;
-        console.log(response);
         managers.push(response); 
     });
     let roles = []
@@ -206,7 +210,7 @@ function addEmployee () {
   .then ((answers) => {
     let answersArray = [answers.employeeFirstName, answers.employeeLastName, answers.employeeRole, answers.employeeManager];
     console.log(answersArray);
-    let table = `INSERT INTO role (first_name, last_name, role, name_of_manager) VALUES (?, ?, ?)`;
+    let table = `INSERT INTO role (first_name, last_name, title, name_of_manager) VALUES (?, ?, ?, ?);`;
     dbConnect.query(table, answersArray, ((err) => {
         if (err) throw err;
         console.log('New role added successfully.');
@@ -227,3 +231,11 @@ async function updateEmployeeRole () {
 ])
 };
 promptUser();
+
+
+// response.forEach((department) => { 
+//     console.log(department.id)
+//     if (answer.roleDepartment === department.name) {
+//     dept_id = department.id;
+//     return;
+// }})
