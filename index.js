@@ -1,10 +1,9 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
 const dbConnect = require("./config/connection");
 const express = require('express');
-const { get } = require('https');
-const { isArray } = require('util');
-const app = express();
+// const { get } = require('https');
+// const { isArray } = require('util');
+// const app = express();
 
 dbConnect.connect((err) => {
     if (err) throw err;
@@ -19,7 +18,8 @@ const promptUser = () => {
                 name: 'start',
                 message: 'What would you like to do?',
                 choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 
-                'Update an employee\'s role', 'View employees by Manager', 'Delete existing employee','Exit']
+                'Update an employee\'s role', 'View employees by Manager', 'Delete existing employee','Delete an existing department','Delete an existing role',
+                'Exit']
             })
         .then((answers) => {
             if (answers.start === 'View all departments') {
@@ -51,7 +51,13 @@ const promptUser = () => {
             };
             if (answers.start === 'Delete existing employee') {
                 deleteEmployee();
-            }
+            };
+            if (answers.start === 'Delete an existing department') {
+                    deleteDepartment();
+                };
+            if (answers.start === 'Delete an existing role') {
+                    deleteRole();
+                };
             if (answers.start === 'Exit') {
                 dbConnect.end();
             };
@@ -182,7 +188,7 @@ const addRole = () => {
         let table = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
         dbConnect.query(table, answersArray, ((err) => {
             if (err) throw err;
-            console.log('New role added successfully.');
+            console.log('\nNew role added successfully.\n');
             getAllRoles();
         }))
      });  
@@ -244,11 +250,11 @@ function addEmployee () {
         role_id = role.role_id;
     }});
     let answersArray = [answers.employeeFirstName, answers.employeeLastName, role_id, title, managerName];
-    console.log(`Answers array ${answersArray}`);
-    const newEmptable = `INSERT INTO employees (first_name, last_name, role_id, title, name_of_manager) VALUES (?, ?, ?, ?, ?);`;
-    dbConnect.query(newEmptable, answersArray, ((err) => {
+    // console.log(`Answers array ${answersArray}`);
+    const newEmpTable = `INSERT INTO employees (first_name, last_name, role_id, title, name_of_manager) VALUES (?, ?, ?, ?, ?);`;
+    dbConnect.query(newEmpTable, answersArray, ((err) => {
         if (err) throw err;
-        console.log('New employee added successfully.');
+        console.log('\nNew employee added successfully.\n');
         getAllEmployees();
     }))
  });
@@ -298,7 +304,7 @@ function addEmployee () {
                             employees.id = ?`
        dbConnect.query(selectedEmployee, updateEmpArray, (err) => {
       if (err) throw err;
-      console.log('Employee has been updated successfully.');
+      console.log('\nEmployee has been updated successfully.\n');
         getAllEmployees();
         })
     })
@@ -307,28 +313,83 @@ function addEmployee () {
 
 // DELETE FUNCTIONS //
 
-async function deleteEmployee () {
+const deleteEmployee = () => {
     let employeeList = []
     let employeesTable = `SELECT first_name, last_name, id FROM employees ORDER BY title ASC;`;
     dbConnect.query(employeesTable, (err, response) => {
         if (err) throw err;
         response.forEach((employees) => {
-            employeeList.push(`${employees.first_name} ${employees.last_name} ${employees.id}`);
+            employeeList.push(`${employees.first_name} ${employees.last_name}`);
     });
     const question = inquirer 
         .prompt ([
         {
             type: 'list', 
-            name: 'deptName',
+            name: 'employeeToUpdate',
             message: 'Which employee would you like to delete?',
             choices: employeeList
         }
     ]) .then((answer) => {
-        let employeeToDelete = answer.employeeToUpdate.split('')[2];
-        let table = ` DELETE FROM employees WHERE first_name, last_name VALUES (?, ?)`;
+        let employeeToDelete = answer.employeeToUpdate
+        let table = ` DELETE FROM employees WHERE CONCAT(first_name + " " + last_name) = ?)`;
         dbConnect.query(table, employeeToDelete, (err) => {
           if (err) throw err;
+          console.log(`\nEmployee has been deleted from system.\n`)
           getAllEmployees();
+        })
+        })
+    })};
+
+const deleteDepartment = () => {
+        let departmentList = []
+        let departmentTable = `SELECT name FROM department ORDER BY title ASC;`;
+        dbConnect.query(departmentTable, (err, response) => {
+            if (err) throw err;
+            response.forEach((department) => {
+                departmentList.push(`${department.name}`);
+        });
+        const question = inquirer 
+            .prompt ([
+            {
+                type: 'list', 
+                name: 'deptToDelete',
+                message: 'Which employee would you like to delete?',
+                choices: employeeList
+            }
+        ]) .then((answer) => {
+            let employeeToDelete = answer.deptToDelete;
+            let table = ` DELETE FROM department WHERE name VALUES (?)`;
+            dbConnect.query(table, employeeToDelete, (err) => {
+              if (err) throw err;
+              console.log(`\nDepartment has been deleted from system.\n`)
+              getAllDepartments();
+            })
+            })
+        })};
+
+const deleteRole = () => {
+    let roleList = []
+    let roleTable = `SELECT title FROM role ORDER BY title ASC;`;
+    dbConnect.query(roleTable, (err, response) => {
+        if (err) throw err;
+        response.forEach((role) => {
+            roleList.push(`${role.title}`);
+    });
+    const question = inquirer 
+        .prompt ([
+        {
+            type: 'list', 
+            name: 'roleToDelete',
+            message: 'Which employee would you like to delete?',
+            choices: roleList
+        }
+    ]) .then((answer) => {
+        let roleToDelete = answer.roleToDelete;
+        let table = ` DELETE FROM role WHERE name VALUES (?)`;
+        dbConnect.query(table, roleToDelete, (err) => {
+            if (err) throw err;
+            console.log(`\nDepartment has been deleted from system.\n`)
+            getAllRoles();
         })
         })
     })};
