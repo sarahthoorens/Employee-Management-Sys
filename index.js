@@ -366,16 +366,14 @@ function deleteEmployee() {
                     choices: employeeList
                 }
             ]).then((answer) => {
-                let employeeToDelete = answer.employeeToUpdate
-                console.log(employeeToDelete)
+                let employeeToDelete = answer.employeeToUpdate.split(' ').slice(0, 2).join(' ');
                 let table = `DELETE FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?`;
                 dbConnect.query(table, employeeToDelete, (err) => {
                     if (err) throw err;
-                    console.log(`\n${employeeToDelete} has been deleted from system.\n`)
+                    console.log(`\n${employeeToDelete} has been deleted from the system.\n`)
                     getAllEmployees();
                 })
-            }).catch(err => {
-                console.error(err)});
+            })
     })
 };
 
