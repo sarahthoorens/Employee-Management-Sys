@@ -71,9 +71,9 @@ Contributions are welcome. My contact information is below.
 
 ## Challenges 
 
-I fully enjoy working on database projects. Setting up the data was quick and straightforward. While figuring out new ways to manipulate and interact with the data is satisfying work, configuring the logic for each condition was the most challenging part of this project. However, once I determined the main syntax for each add, view and delete option, it was mostly a matter of small reconfigurations for every instance. I think my approach could have been more streamlined, but I'm happy with the work done. 
+I fully enjoy working on database projects. Setting up the data was quick and straightforward. While figuring out new ways to manipulate and interact with the data is satisfying work, configuring the logic for each condition was the most challenging part of this project. However, once I determined the main syntax for each add, view and delete option, it was mostly a matter of small reconfigurations for every instance. I think my approach could have been more streamlined, but I'm happy with the work done.
 
-I was able to implement the required functions as well as the "select employees by manager" and three "delete" options. When I have more time, I intend to return to complete the other bonus functions. 
+I was able to implement the required functions as well as the "select employees by manager" and three "delete" options. When I have more time, I intend to return to complete the other bonus functions. For future development, I'd like to make the CLI interface a little more user-friendly by adding formatting to the data using something like figlet. I'd also like to reorganize the code to separate queries from index.js.
 
 ## Tests
 
