@@ -65,6 +65,13 @@ To implement this program, you'll need to require node and install the inquirer 
 
 In VSCode, navigate to the server.js file, open the integrate terminal and enter node server.js. The employee database interface will populate and present user with options to interact with the data.
 
+APPLICATION SCREENSHOTS:
+
+![screengrab of ems in action](./assets/ems-1.png "Depts and Roles")
+
+
+![screengrab 2 of emails in action](./assets/ems-2.png "Employee by Manager")
+
 ## Contributing
 
 Contributions are welcome. My contact information is below.
