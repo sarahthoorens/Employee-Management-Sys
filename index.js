@@ -6,6 +6,7 @@ dbConnect.connect((err) => {
     if (err) throw err;
    
 });
+
 console.log('WELCOME TO THE EMPLOYEE MANAGEMENT SYSTEM')
 const promptUser = () => {
     inquirer
@@ -15,7 +16,7 @@ const promptUser = () => {
                 name: 'start',
                 message: 'What would you like to do?',
                 choices: ['View all departments', 'View all roles', 'View all employees', 'View employees by Manager', 'Add a department', 'Add a role', 'Add an employee', 
-                'Update an employee\'s role', , 'Delete existing employee','Delete an existing role', 'Delete an existing department',
+                'Update an employee\'s role', 'Delete existing employee','Delete an existing role', 'Delete an existing department',
                 'Exit']
             })
         .then((answers) => {
@@ -66,39 +67,39 @@ const promptUser = () => {
 
 // VIEW FUNCTIONS
 
-const getAllEmployees = () => {
-    let table = `SELECT id, first_name, last_name, role_id, title
+async function getAllEmployees () {
+    let table = await `SELECT id, first_name, last_name, role_id, title
                 FROM employees ORDER BY last_name ASC;`;
-        dbConnect.query(table, (err, response) => {
+     dbConnect.query(table, (err, response) => {
         if (err) throw err;
-        console.log('Current Employees:');
+        console.log(`\nCurrent Employees:\n`);
         console.table(response);
-        promptUser();
-    });
+    });      promptUser();
 };
 
-const getAllDepartments = () => {
+async function getAllDepartments () {
     let table =  `SELECT *
                 FROM department ORDER BY dept_id ASC;`;
                 dbConnect.query(table, (err, response) => {
                     if (err) throw err;
-                    console.log('\nAll Departments:');
+                    console.log(`\nAll Departments:\n`);
                     console.table(response);
-                    promptUser();
-                });
+                  
+                });     promptUser();
     };
 
-const getAllRoles = () => {
+async function getAllRoles () {
     let table = `SELECT *
                 FROM role ORDER BY role_id ASC`;
         dbConnect.query(table, (err, response) => {
         if (err) throw err;
-        console.log('\nAll Roles:');
+        console.log(`\nAll Roles:\n`);
         console.table(response);
-        promptUser();
-        });
+
+        });     promptUser();
 };
-const getEmployeesByManager = () => {
+
+async function getEmployeesByManager () {
     let managers = [];
     let managerTable = `SELECT first_name,last_name, title, role_id 
                 FROM employees WHERE title LIKE '%Manager%'`;
@@ -153,7 +154,7 @@ const question = inquirer
     })
 };
 
-const addRole = () => {
+async function addRole () {
     let deptChoices = []
     let table = `SELECT * FROM department ORDER BY name ASC;`
     dbConnect.query(table, (err, response) => {
@@ -193,7 +194,7 @@ const addRole = () => {
   });    
 }; 
 
-function addEmployee () {
+async function addEmployee () {
     let roles = []
     let rolesTable = `SELECT * FROM role ORDER BY title ASC;`;
     dbConnect.query(rolesTable, (err, response) => {
@@ -265,7 +266,7 @@ function addEmployee () {
 
 // UPDATE FUNCTION // 
 
- const updateEmployeeRole = () => {
+async function updateEmployeeRole () {
     let employeeList = []
     let employeesTable = `SELECT first_name, last_name, id FROM employees ORDER BY title ASC;`;
     dbConnect.query(employeesTable, (err, response) => {
@@ -318,7 +319,7 @@ function addEmployee () {
 
 // DELETE FUNCTIONS //
 
-const deleteEmployee = () => {
+async function deleteEmployee () {
     let employeeList = []
     let employeesTable = `SELECT first_name, last_name, id FROM employees ORDER BY title ASC;`;
     dbConnect.query(employeesTable, (err, response) => {
@@ -345,7 +346,9 @@ const deleteEmployee = () => {
         })
         })
     })};
-const deleteRole = () => {
+
+
+async function deleteRole () {
     let roleList = []
     let roleTable = `SELECT title FROM role ORDER BY title ASC;`;
     dbConnect.query(roleTable, (err, response) => {
@@ -372,7 +375,7 @@ const deleteRole = () => {
         })
     })};
 
-const deleteDepartment = () => {
+async function deleteDepartment () {
         let departmentList = []
         let departmentTable = `SELECT name FROM department ORDER BY name ASC;`;
         dbConnect.query(departmentTable, (err, response) => {
