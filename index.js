@@ -13,7 +13,7 @@ const promptUser = () => {
             type: 'list',
             name: 'start',
             message: 'What would you like to do?',
-            choices: ['View all employees', 'View all departments', 'View all roles','View employees by Manager', 'Add a department', 'Add a role', 'Add an employee',
+            choices: ['View all employees', 'View all departments', 'View all roles', 'View employees by Manager', 'Add a department', 'Add a role', 'Add an employee',
                 'Update an employee\'s role', 'Delete an existing employee', 'Delete an existing role', 'Delete an existing department',
                 'Exit']
         })
@@ -70,7 +70,7 @@ function getAllEmployees() {
             LEFT JOIN role ON employees.role_id = role.role_id
             LEFT JOIN department ON role.department_id = department.dept_id 
             ORDER by department ASC`;
-        dbConnect.query(table, (err, response) => {
+    dbConnect.query(table, (err, response) => {
         if (err) throw err;
         else {
             console.log(`\nCurrent Employees:\n`);
@@ -86,10 +86,10 @@ function getAllDepartments() {
     dbConnect.query(table, (err, response) => {
         if (err) throw err;
         else {
-        console.log(`\nAll Departments:\n`);
-        console.table(response);
+            console.log(`\nAll Departments:\n`);
+            console.table(response);
         } promptUser();
-    })        
+    })
 };
 
 function getAllRoles() {
@@ -114,28 +114,28 @@ function getEmployeesByManager() {
         })
 
 
-    inquirer
-        .prompt([
-            {
-                type: 'list',
-                name: 'managerSelected',
-                message: 'What is the name of the Manager?',
-                choices: managers
-            }
-        ]).then((answer) => {
-            let managerSelected = answer.managerSelected;
-            console.log(managerSelected);
-            let managerTable = `SELECT * FROM employees_db.employees WHERE manager_name = ?`
-            dbConnect.query(managerTable, managerSelected, (err, response) => {
-                if (err) throw err;
-                console.log(`\nEmployees under Manager ${managerSelected}:`);
-                console.table(response);
-                promptUser();
-            })
-        }).catch(err => {
-            console.error(err);
-          });
-    })};
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'managerSelected',
+                    message: 'What is the name of the Manager?',
+                    choices: managers
+                }
+            ]).then((answer) => {
+                let managerSelected = answer.managerSelected;
+                let managerTable = `SELECT * FROM employees_db.employees WHERE manager_name = ?`
+                dbConnect.query(managerTable, managerSelected, (err, response) => {
+                    if (err) throw err;
+                    console.log(`\nEmployees under Manager ${managerSelected}:`);
+                    console.table(response);
+                    promptUser();
+                })
+            }).catch(err => {
+                console.error(err);
+            });
+    })
+};
 
 
 // ADD FUNCTIONS //
@@ -162,7 +162,8 @@ async function addDept() {
                 getAllDepartments();
             })
         }).catch(err => {
-            console.error(err)});
+            console.error(err)
+        });
 };
 
 async function addRole() {
@@ -203,8 +204,9 @@ async function addRole() {
                 }))
             }).catch(err => {
                 console.error(err);
-    });
-})};
+            });
+    })
+};
 
 function addEmployee() {
     let roles = []
@@ -214,74 +216,74 @@ function addEmployee() {
         response.forEach((role) => {
             roles.push(`${role.title}`);
         });
- 
 
-    let managers = [];
-    let managerTable = `SELECT first_name,last_name, title, role_id 
+
+        let managers = [];
+        let managerTable = `SELECT first_name,last_name, title, role_id 
                 FROM employees WHERE title LIKE '%Manager%'`;
-    dbConnect.query(managerTable, (err, response) => {
-        if (err) throw err;
-        response.forEach((employees) => {
-            managers.push(`${employees.first_name} ${employees.last_name} ${employees.title}`, 'none');
-        });
+        dbConnect.query(managerTable, (err, response) => {
+            if (err) throw err;
+            response.forEach((employees) => {
+                managers.push(`${employees.first_name} ${employees.last_name} ${employees.title}`, 'none');
+            });
 
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                name: 'employeeFirstName',
-                message: `What is the employee's first name?`,
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        name: 'employeeFirstName',
+                        message: `What is the employee's first name?`,
 
-            },
-            {
-                type: 'input',
-                name: 'employeeLastName',
-                message: `What is the employee's last name?`,
+                    },
+                    {
+                        type: 'input',
+                        name: 'employeeLastName',
+                        message: `What is the employee's last name?`,
 
-            },
-            {
-                type: 'list',
-                name: 'employeeRole',
-                message: `What is the employee's role?`,
-                choices: roles
-            },
-            {
-                type: 'list',
-                name: 'employeeManager',
-                message: `Who is the employee's manager?`,
-                choices: managers
+                    },
+                    {
+                        type: 'list',
+                        name: 'employeeRole',
+                        message: `What is the employee's role?`,
+                        choices: roles
+                    },
+                    {
+                        type: 'list',
+                        name: 'employeeManager',
+                        message: `Who is the employee's manager?`,
+                        choices: managers
 
-            },
-        ])
-        .then((answers) => {
-            let managerName
-            if (answers.employeeManager === 'none') {
-                managerName = '';
-            } else {
-                managerName = answers.employeeManager.split(' ').slice(0, 2).join(' ');
-                console.log(managerName)
-            };
-            let role_id
-            let title = answers.employeeRole;
-            let rolesTable = `SELECT * FROM role ORDER BY title ASC;`;
-            dbConnect.query(rolesTable, (err, response) => {
-                if(err) throw(err);
-                response.forEach((role) => {
-                    if (title === `${role.title}`){
-                    role_id = `${role.role_id}`};
-                    console.log(role_id)
-                }); console.log(title)
-                    let newEmpArray = [answers.employeeFirstName, answers.employeeLastName, role_id, title, managerName];
-                    console.log(newEmpArray);
-                    const newEmpTable = `INSERT INTO employees (first_name, last_name, role_id, title, manager_name) VALUES (?, ?, ?, ?, ?);`;
-                    dbConnect.query(newEmpTable, newEmpArray, ((err) => {
-                     if (err) throw err;
-                     console.log(`\n${answers.employeeFirstName} ${answers.employeeLastName} added!\n`);
-                     getAllEmployees();
+                    },
+                ])
+                .then((answers) => {
+                    let managerName
+                    if (answers.employeeManager === 'none') {
+                        managerName = '';
+                    } else {
+                        managerName = answers.employeeManager.split(' ').slice(0, 2).join(' ');
+                        console.log(managerName)
+                    };
+                    let role_id
+                    let title = answers.employeeRole;
+                    let rolesTable = `SELECT * FROM role ORDER BY title ASC;`;
+                    dbConnect.query(rolesTable, (err, response) => {
+                        if (err) throw (err);
+                        response.forEach((role) => {
+                            if (title === `${role.title}`) {
+                                role_id = `${role.role_id}`
+                            };
+                            console.log(role_id)
+                        }); console.log(title)
+                        let newEmpArray = [answers.employeeFirstName, answers.employeeLastName, role_id, title, managerName];
+                        const newEmpTable = `INSERT INTO employees (first_name, last_name, role_id, title, manager_name) VALUES (?, ?, ?, ?, ?);`;
+                        dbConnect.query(newEmpTable, newEmpArray, ((err) => {
+                            if (err) throw err;
+                            console.log(`\n${answers.employeeFirstName} ${answers.employeeLastName} added!\n`);
+                            getAllEmployees();
                         }));
-                 
+
+                    })
                 })
-            })
         })
     })
 }
@@ -320,31 +322,35 @@ function updateEmployeeRole() {
                 ]).then((answers) => {
                     const employeeIdToUpdate = answers.employeeToUpdate.split(' ')[2];;
                     const newRoleId = answers.employeeNewRole.split(' ')[0];
-                    let newRole = [] 
-                    
+                    let newRole = []
+
                     let rolesTable = `SELECT * FROM role ORDER BY title ASC;`;
                     dbConnect.query(rolesTable, (err, response) => {
                         if (err) throw err;
-                      response.forEach((role) => {
-                        if (newRoleId == `${role.role_id}`){
-                            newRole = `${role.title}`
-                  }})})
+                        response.forEach((role) => {
+                            if (newRoleId == `${role.role_id}`) {
+                                newRole = `${role.title}`
+                            }
+                        })
+                    })
                     let selectedEmployee = `UPDATE employees 
                                             SET employees.role_id = ? WHERE employees.id = ?`
-                                            
+
                     dbConnect.query(selectedEmployee, [newRoleId, employeeIdToUpdate], (err) => {
                         if (err) throw err;
-                     let selectedEmployee = `UPDATE employees
+                        let selectedEmployee = `UPDATE employees
                                     SET employees.title = ? WHERE employees.id = ?`
-                    dbConnect.query(selectedEmployee, [newRole, employeeIdToUpdate], (err) => {
-                        if (err) throw err;
-                        console.log(`\nEmployee role has been updated.\n`);
-                        getAllEmployees();
+                        dbConnect.query(selectedEmployee, [newRole, employeeIdToUpdate], (err) => {
+                            if (err) throw err;
+                            console.log(`\nEmployee role has been updated.\n`);
+                            getAllEmployees();
 
-                    })});})
-                });
-        })
-    }
+                        })
+                    });
+                })
+        });
+    })
+}
 
 // DELETE FUNCTIONS //
 
@@ -357,7 +363,7 @@ function deleteEmployee() {
             employeeList.push(`${employees.first_name} ${employees.last_name} ${employees.id}`);
         });
 
-         inquirer
+        inquirer
             .prompt([
                 {
                     type: 'list',
@@ -403,7 +409,8 @@ function deleteRole() {
                     getAllRoles();
                 })
             }).catch(err => {
-                console.error(err)});
+                console.error(err)
+            });
     })
 };
 
@@ -432,7 +439,8 @@ function deleteDepartment() {
                     getAllDepartments();
                 })
             }).catch(err => {
-                console.error(err)});
+                console.error(err)
+            });
     })
 };
 

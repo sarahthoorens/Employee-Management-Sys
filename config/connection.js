@@ -1,6 +1,6 @@
 const mysql = require("mysql2");
 
-// establishing database connection use promise so we can away on connection
+
 const dbConnect = mysql.createConnection(
     {
       host: 'localhost',

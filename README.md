@@ -6,7 +6,7 @@ CLI employee tracker using sql, node and inquirer
 
   **Completion Date:**  11/1/22
   
-  **WALK-THROUGH CAN BE FOUND HERE:**
+  [**CLICK HERE FOR VIDEO WALK-THROUGH**](https://drive.google.com/file/d/1paWJ36R1gx-mjSLfY23Y7lmQMNvQJChV/view?usp=sharing)
   
   **Technologies used:**  Node.js, JavaScript, npm Inquirer package, mySql2 <br>
   **Project goal:**  Create a command-line <br>
